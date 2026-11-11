@@ -1,0 +1,58 @@
+{
+  "profile": {
+    "name": "",
+    "called_by": "",
+    "birth_year": null,
+    "birth_month": null,
+    "birth_day": null,
+    "height_cm": 160,
+    "appearance": "",
+    "speech": ""
+  },
+  "personality": {
+    "warmth": 0.55,
+    "sensitivity": 0.55,
+    "resilience": 0.55,
+    "optimism": 0.55,
+    "openness": 0.55,
+    "stubbornness": 0.55
+  },
+  "zodiac_traits": {},
+  "body_rest": {
+    "stamina": 65,
+    "sleepiness": 32,
+    "hunger": 26,
+    "health": 85
+  },
+  "relation_rest": {
+    "affection": 60,
+    "trust": 60,
+    "dependence": 50,
+    "security": 55,
+    "rapport": 50
+  },
+  "talents": [
+    "理性",
+    "直觉",
+    "共情",
+    "表达",
+    "动手",
+    "胆量"
+  ],
+  "talent_default": {
+    "理性": 60,
+    "直觉": 60,
+    "共情": 60,
+    "表达": 60,
+    "动手": 55,
+    "胆量": 50
+  },
+  "proactive": {
+    "base": 3,
+    "happy": 5,
+    "low": 1,
+    "night_start": 23,
+    "night_end": 7,
+    "gap_min": 150
+  }
+}
