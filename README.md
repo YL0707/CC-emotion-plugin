@@ -3,7 +3,8 @@
 一个**纯本地**跑的情绪状态面板：把「身体 / 情绪 / 关系 / 记忆」拆成能算的数字，算完摊在一页上看。
 Python 标准库 + 一个网页，不用装依赖，不联网，数据都在本机。
 
-![面板](docs/preview.txt)
+<img width="1264" height="805" alt="screenshot" src="https://github.com/user-attachments/assets/bd5b918e-c8b9-4e78-852d-7ac1cb6a5533" />
+
 
 ## 它算些什么
 
