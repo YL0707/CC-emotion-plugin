@@ -1,0 +1,7 @@
+config.json
+data/
+model/
+*.log
+dist/
+build/
+pycache/
