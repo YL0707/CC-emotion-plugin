@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>冰冰</title>
+<style>
+  :root {
+  --text: #55638a; --text2: #8492b2; --title: #3f4d6b; --zoom: 1;
+    --ink: #2b3550;
+    --soft: #6b7796;
+    --line: rgba(90, 120, 180, .16);
+    --card: rgba(255, 255, 255, .56);
+    --accent: #7fa8e8;
+    --accent2: #a9d0ff;
+    --bar1: #a8c8f4;
+    --bar2: #7fa8e8;
+    --bg-a: #ffeaf3;
+    --bg-b: #e6f1ff;
+    --bg-c: #eef6ff;
+    --bg-d1: #f7f9ff;
+    --bg-d2: #eef4ff;
+    --bg-d3: #f8f2f8;
+  }
+  * { box-sizing: border-box; }
+  html { height: 100%; margin: 0; overflow: hidden; }
+  body { height: 100%; margin: 0; overflow: hidden; zoom: var(--zoom, 1); color: var(--text); }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 700px at 12% 8%, var(--bg-a) 0%, rgba(255, 255, 255, 0) 60%),
+      radial-gradient(900px 700px at 88% 4%, var(--bg-b) 0%, rgba(255, 255, 255, 0) 62%),
+      radial-gradient(800px 800px at 50% 110%, var(--bg-c) 0%, rgba(255, 255, 255, 0) 70%),
+      linear-gradient(160deg, var(--bg-d1) 0%, var(--bg-d2) 55%, var(--bg-d3) 100%);
+  }
+  .wrap {
+    position: relative; z-index: 2; height: 100vh;
+    display: grid; grid-template-columns: minmax(240px,19%) minmax(0,1fr) minmax(260px,25%);
+    gap: 12px; padding: 12px;
+  }
+  .col { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; overflow-y: auto; overflow-x: hidden; padding-right: 3px; }
+.col::-webkit-scrollbar { width: 6px; }
+.col::-webkit-scrollbar-thumb { background: rgba(150,180,220,.45); border-radius: 3px; }
+.col::-webkit-scrollbar-track { background: transparent; }
+
+  .card {
+  min-width: 0; overflow: hidden; flex: 0 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 16px 13px;
+    backdrop-filter: blur(9px);
+    box-shadow: 0 6px 20px rgba(80, 110, 170, .05);
+    min-height: 0;
+  }
+  h2 {
+    margin: 0 0 8px; font-size: 13.5px; font-weight: 600; letter-spacing: 2.5px;
+    color: var(--title); display: flex; align-items: center; gap: 7px;
+  }
+
+  h2 em, details.fold summary em, .name em {
+    font-style: normal; width: 16px; height: 16px; border-radius: 5px;
+    background: rgba(150, 190, 240, .22); color: var(--title); font-size: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    letter-spacing: 0; font-weight: 700; flex: 0 0 auto;
+  }
+  details.fold summary {
+    cursor: pointer; list-style: none; margin: 0 0 8px; font-size: 13.5px; font-weight: 600;
+    letter-spacing: 2.5px; color: var(--title); display: flex; align-items: center; gap: 7px;
+  }
+  details.fold summary::-webkit-details-marker { display: none; }
+  details.fold summary::before {
+    content: ""; width: 3px; height: 11px; border-radius: 2px;
+    background: linear-gradient(var(--accent2), var(--accent));
+  }
+  details.fold summary::after {
+    content: "展开"; margin-left: auto; font-size: 11px; color: var(--text2); letter-spacing: 0;
+  }
+  details.fold[open] summary::after { content: "收起"; }
+  details.fold[open] { max-height: 30vh; overflow: auto; padding-right: 6px; }
+  h2::before { content: ""; width: 3px; height: 11px; border-radius: 2px; background: linear-gradient(var(--accent2), var(--accent)); }
+
+  /* ---- 左：人物 ---- */
+  #stageWrap { flex: 0 0 auto; height: 430px; position: relative; overflow: hidden; padding: 0; }
+  #stage { position: absolute; left: 0; right: 0; top: 40px; bottom: 46px; }
+  .roleTag { font-size: 13px; color: var(--text2); letter-spacing: 1px; display: inline-block; margin-right: 3px; vertical-align: 2px; }
+  .name { position: absolute; left: 16px; top: 10px; z-index: 5; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .name b { display: inline-block; font-size: 20px; letter-spacing: 2px; font-weight: 600; color: var(--title); }
+  .name span { display: block; font-size: 10.5px; letter-spacing: 2px; color: var(--text2); margin-top: 3px; }
+  .mood { position: absolute; left: 16px; right: 16px; bottom: 4px; z-index: 6; text-align: left; }
+  .mood .label { font-size: 24px; font-weight: 600; letter-spacing: 3px; line-height: 1.1; }
+  .mood .sub { font-size: 12.5px; color: var(--text2); margin-top: 5px; letter-spacing: 1px; }
+
+  #starCard { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  #starMap { flex: 1 1 auto; width: 100%; min-height: 120px; border-radius: 12px; }
+  #starHint { font-size: 12px; color: var(--text2); margin-top: 4px; letter-spacing: .5px; }
+
+  /* ---- 中：信息 ---- */
+  .clockline { display: flex; align-items: baseline; gap: 10px; }
+  .clockline .t { font-size: 34px; font-weight: 600; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+  .clockline .d { font-size: 13.5px; color: var(--text); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(94px, 1fr)); gap: 6px 10px; margin-top: 8px; }
+  .fact { background: rgba(255, 255, 255, .5); border-radius: 10px; padding: 6px 9px; min-width: 0; overflow: hidden; }
+  .fact i { display: block; font-style: normal; font-size: 12px; color: var(--text2); letter-spacing: 1px; }
+  .fact b { font-size: 15.5px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fact b em { font-style: normal; font-size: 11px; color: var(--text2); margin-left: 2px; }
+
+  .row { display: flex; align-items: center; gap: 5px; margin: 7px 0; font-size: 14.5px; }
+  .row > .k { order: 1; }
+  .row > .v { order: 2; width: auto; min-width: 20px; text-align: right; }
+  .row > .bar { order: 3; flex: 1 1 auto; min-width: 34px; }
+  .row > .mx { order: 4; width: 22px; flex: 0 0 auto; text-align: left; font-size: 10px; color: var(--text2); font-variant-numeric: tabular-nums; }
+  .row .k { width: 58px; color: var(--text); flex: 0 0 auto; }
+  .bar { flex: 1; display: block; height: 16px; border-radius: 3px; overflow: hidden; position: relative; min-width: 0;
+         background-color: #eef3fb;
+         background-image: repeating-linear-gradient(90deg, rgba(160,185,225,.45) 0 1px, transparent 1px 25%);
+         box-shadow: inset 0 0 0 1px rgba(150, 175, 215, .5); }
+  .bar > i { display: none; }
+  .bar::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: var(--w, 0%);
+        border-radius: 2px; transition: width .6s ease;
+        background: linear-gradient(180deg, #a8c8f4, #7fa8e8);
+        box-shadow: inset 0 -2px 0 rgba(90, 125, 190, .22); }
+  .row .v { width: 24px; text-align: right; font-size: 13.5px; font-weight: 600; color: var(--title); font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+
+  .faces { display: flex; gap: 8px; margin: 0 0 6px; }
+  .faces div { flex: 1; background: rgba(255, 255, 255, .55); border-radius: 10px; padding: 6px 9px; }
+  .faces i { display: block; font-style: normal; font-size: 12px; color: var(--text2); letter-spacing: 1px; }
+  .faces b { font-size: 16.5px; font-weight: 600; }
+
+  #infl { margin: 0; padding-left: 15px; font-size: 14px; color: var(--text); line-height: 1.8; }
+  #infl li::marker { color: #c3a2ff; }
+
+  .note { word-break: break-word; overflow-wrap: anywhere; font-size: 13.5px; line-height: 1.85; color: var(--text); }
+  .note b { color: var(--title); }
+  .ztable { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 12px; margin-top: 7px; }
+  .legend { display: flex; gap: 14px; justify-content: center; margin-top: 2px; font-size: 12.5px; color: var(--text2); }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: block; }
+  .lg-base { background: rgba(120, 170, 240, .35); }
+  .lg-add { background: #f4a3c8; }
+  .lg-sub { background: #8fa8d8; }
+  .zrow { display: flex; justify-content: space-between; font-size: 12.5px; padding: 2px 5px; border-radius: 6px; color: var(--text); }
+  .zrow.me { background: rgba(255, 205, 225, .45); color: var(--title); font-weight: 600; }
+  .zrow span:last-child { color: var(--text2); letter-spacing: .3px; }
+
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btns button { border: 1px solid rgba(140, 165, 210, .35); background: rgba(255, 255, 255, .72); color: var(--title); border-radius: 9px; padding: 6px 11px; font-size: 13.5px; cursor: pointer; transition: .18s; cursor: pointer;
+    transition: .18s;
+  }
+  .btns button:hover { background: #fff; border-color: #b7c9ea; transform: translateY(-1px); }
+  .btns button i { display: block; font-style: normal; font-size: 9.5px; opacity: .55; margin-top: 1px; letter-spacing: .3px; }
+
+  #radar { width: 100%; height: 178px; display: block; }
+  .g6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; margin-top: 4px; }
+  .g6 .cell { font-size: 12.5px; color: var(--text); }
+  .g6 .cell i { font-style: normal; font-weight: 600; color: var(--title); margin-left: 4px; }
+
+  .scroll { overflow: auto; }
+  .scroll::-webkit-scrollbar { width: 5px; }
+  .scroll::-webkit-scrollbar-thumb { background: rgba(140, 165, 210, .35); border-radius: 4px; }
+
+  /* 星图放大 */
+  #starOverlay {
+    position: fixed; inset: 0; z-index: 50; display: none;
+    background: rgba(235, 241, 252, .82); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  #starOverlay.on { display: flex; }
+  .bigcard {
+    background: #fbfcff; border: 1px solid rgba(120, 150, 200, .25);
+    border-radius: 20px; box-shadow: 0 20px 60px rgba(70, 100, 160, .18);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .bighint { font-size: 13px; color: var(--text); padding: 7px 14px; letter-spacing: .5px; }
+  .bigcard canvas { display: block; cursor: pointer; }
+  @media (max-width: 1180px) {
+    .wrap { grid-template-columns: minmax(240px, 23%) minmax(0, 1fr) minmax(260px, 25%); }
+  }
+  /* 手机 / 窄屏：单列往下排，别再横向溢出 */
+  @media (max-width: 860px) {
+    body { overflow: auto; zoom: 1 !important; }
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 10px; height: auto; min-height: 100vh; }
+    .col { min-width: 0; overflow: visible; }
+    .grid2 { grid-template-columns: 1fr; }
+    .ztable { grid-template-columns: 1fr 1fr; }
+    .g6 { grid-template-columns: 1fr 1fr; }
+    .vgrid { grid-template-columns: repeat(3, 1fr); }
+    .card { max-width: 100%; }
+    .row .k { width: 60px; font-size: 12.5px; white-space: nowrap; }
+    .row .mx { width: 24px; }
+    .card { padding-left: 12px; padding-right: 12px; }
+  }
+
+#helpWrap { position: absolute; right: 8px; top: 8px; z-index: 8; }
+#helpBtn { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(150,190,240,.6);
+  background: rgba(255,255,255,.62); color: var(--title); font-size: 11.5px; font-weight: 700;
+  cursor: pointer; line-height: 1; box-shadow: 0 2px 10px rgba(120,150,200,.2); }
+#helpBtn:hover { background: #eef4ff; }
+#helpPop { display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, 82vw); max-height: 80vh; overflow: auto; padding: 20px 24px; border-radius: 16px; background: rgba(255,255,255,.985); box-shadow: 0 18px 60px rgba(40,70,130,.32); border: 1px solid rgba(150,185,235,.5); z-index: 95; }
+#helpPop.on { display: block; }
+#helpMask { display: none; position: fixed; inset: 0; background: rgba(30,45,80,.22); backdrop-filter: blur(1.5px); z-index: 94; }
+#helpMask.on { display: block; }
+#helpPop h3 { font-size: 14px; letter-spacing: 2px; color: var(--title); margin: 0 0 6px; font-weight: 600; }
+.vgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 6px; margin: 4px 0 2px; }
+.vitem { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.vbar { position: relative; width: 9px; height: 58px; border-radius: 5px;
+  background: rgba(150,180,220,.18); overflow: hidden; }
+.vbar i { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-radius: 5px;
+  background: linear-gradient(180deg, #f6b6d4, #a9d0ff); transition: height .5s; }
+.vk { font-size: 12.5px; color: var(--title); white-space: nowrap; }
+.vv { font-size: 12px; color: var(--text2); }
+.card { position: relative; }
+  #stageWrap { position: relative; flex: 0 0 auto; height: 430px; padding-bottom: 62px; }
+.hint { position: absolute; right: 11px; top: 9px; width: 17px; height: 17px; padding: 0;
+  border-radius: 50%; border: 1px solid rgba(140,175,230,.55); background: rgba(160,195,240,.16);
+  color: var(--text2); font-size: 12px; line-height: 1; cursor: help; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; }
+.hint:hover { background: rgba(160,195,240,.38); color: var(--title); }
+  .vgroup { font-size: 12px; color: var(--text2); letter-spacing: 2px; margin: 10px 0 3px; }
+  .grid2 .row { margin: 4px 0; }
+  .row .k { font-size: 13.5px; }
+  #gearWrap { position: fixed; right: 16px; bottom: 16px; z-index: 96; }
+  #gearBtn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(140,175,230,.55);
+    background: rgba(255,255,255,.75); color: var(--text2); font-size: 16px; line-height: 1; cursor: pointer;
+    font-family: inherit; display: flex; align-items: center; justify-content: center; }
+  #gearBtn:hover { background: #fff; color: var(--title); }
+  #gearPop { display: none; position: absolute; right: 0; bottom: 36px; width: 300px; padding: 14px 16px;
+    border-radius: 14px; background: rgba(255,255,255,.97); box-shadow: 0 12px 40px rgba(60,90,150,.22);
+    border: 1px solid rgba(150,185,235,.45); }
+  #gearPop.on { display: block; }
+#zoomRow { display: flex; gap: 8px; align-items: center; margin: 6px 0 10px; }
+#zoomRow input { flex: 1; accent-color: var(--accent); }
+.zbtn { width: 24px; height: 24px; border-radius: 7px; border: 1px solid rgba(140,175,230,.55);
+  background: rgba(160,195,240,.16); color: var(--title); font-size: 14px; line-height: 1;
+  cursor: pointer; font-family: inherit; padding: 0; }
+.zbtn:hover { background: rgba(160,195,240,.38); }
+
+  #gearPop h3 { margin: 0 0 8px; font-size: 14px; letter-spacing: 2px; color: var(--title); }
+  .grow { display: flex; justify-content: space-between; font-size: 14px; color: var(--text); padding: 4px 0;
+    border-bottom: 1px dashed rgba(150,175,215,.35); }
+  .grow b { color: var(--title); font-weight: 600; }
+#themeRow { display: flex; gap: 7px; align-items: center; margin-top: 6px; }
+  .tbtn { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(90, 120, 180, .28); cursor: pointer; padding: 0; }
+  .tbtn:hover { transform: scale(1.08); }
+  #themeCustom { width: 74px; font-size: 12px; padding: 3px 6px; border-radius: 6px;
+    border: 1px solid rgba(140, 165, 210, .45); background: rgba(255, 255, 255, .8); color: var(--title); }
+  #themeApply { width: auto; height: 22px; border-radius: 6px; padding: 0 8px; font-size: 12px;
+    border: 1px solid rgba(140, 165, 210, .45); background: rgba(255, 255, 255, .85); color: var(--title); cursor: pointer; }
+  #tip { white-space: pre-line; position: fixed; z-index: 95; pointer-events: none; display: none;
+  background: rgba(40,55,90,.92); color: #fff; font-size: 12.5px; padding: 5px 9px;
+  border-radius: 8px; white-space: pre-line; }
+
+  h2, details.fold summary { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name b, .name span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .grow span, .grow b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ztable > div { overflow: hidden; text-overflow: ellipsis; }
+  #baseSummary, #zodiacApply, #zodiacTraits { display: none !important; }
+  .bigclose { position: absolute; right: 10px; top: 10px; width: 30px; height: 30px; border-radius: 50%;
+    border: 0; cursor: pointer; font-size: 18px; line-height: 1; color: #fff;
+    background: rgba(90,120,175,.55); }
+  .bigclose:hover { background: rgba(90,120,175,.85); }
+  #starOverlay .bigcard { position: relative; }
+
+  .gsec { font-size: 11.5px; color: var(--text2); margin: 12px 0 6px; letter-spacing: 1px; }
+  .gform { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+  .gform label { display: flex; flex-direction: column; font-size: 11.5px; color: var(--text2); gap: 3px; }
+  .gform input { width: 100%; box-sizing: border-box; border: 1px solid rgba(140,170,215,.45);
+    border-radius: 7px; padding: 4px 6px; font-size: 12.5px; color: var(--title); background: rgba(255,255,255,.85); font-family: inherit; }
+  .gform label.span2 { grid-column: 1 / -1; }
+  .gform input[type="date"] { font-family: inherit; color: var(--text); padding: 0 7px; }
+  .gform input[type="date"]::-webkit-calendar-picker-indicator { opacity: .55; cursor: pointer; }
+  .gform .gnote { grid-column: 1 / -1; font-size: 10.5px; color: var(--text2); line-height: 1.5; margin-top: -2px; }
+  .gbtns { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .gbtns button { border: 1px solid rgba(140,170,215,.5); background: var(--accent2); color: #fff;
+    border-radius: 8px; padding: 5px 14px; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+  .gbtns b { font-size: 11.5px; color: var(--text2); font-weight: 400; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 左：人物 + 记忆星图 -->
+    <div id="gearWrap">
+    <button id="gearBtn" title="设置">⚙</button>
+    <div id="gearPop">
+      <h3>设置</h3>
+      <div class="grow"><span>叫什么</span><b id="g-name">—</b></div>
+      <div class="grow"><span>生日</span><b id="g-birth">—</b></div>
+      <div class="grow"><span>星座</span><b id="g-zodiac">—</b></div>
+      <div class="grow"><span>身高</span><b id="g-height">—</b></div>
+      <div class="grow"><span>主动额度</span><b id="g-cap">—</b></div>
+      <div class="grow"><span>最短间隔</span><b id="g-gap">—</b></div>
+      <div class="grow"><span>夜间静音</span><b id="g-night">—</b></div>
+      <div class="grow"><span>页面缩放</span><b id="g-zoom">100%</b></div>
+      <div id="zoomRow">
+        <button class="zbtn" data-zoom="-5" title="缩小">−</button>
+        <input id="zoomRange" type="range" min="70" max="150" step="5" value="100">
+        <button class="zbtn" data-zoom="5" title="放大">+</button>
+      </div>
+      <div class="grow" style="display:block">
+        <span>主题色</span>
+        <div id="themeRow">
+          <button class="tbtn" data-theme="冰蓝" style="background:#7fa8e8" title="冰蓝"></button>
+          <button class="tbtn" data-theme="樱粉" style="background:#ef9ec4" title="樱粉"></button>
+          <button class="tbtn" data-theme="薄荷" style="background:#7cc7b2" title="薄荷"></button>
+          <button class="tbtn" data-theme="暮紫" style="background:#9d9be8" title="暮紫"></button>
+          <button class="tbtn" data-theme="暖砂" style="background:#e0a97a" title="暖砂"></button>
+          <input id="themeCustom" placeholder="#88c9ff">
+          <button id="themeApply">用</button>
+        </div>
+      </div>
+        <div class="gsec">直接修改（改完点保存，写回 profile.json）</div>
+        <div class="gform">
+          <label>名字<input id="pf-name" type="text" placeholder="冰冰"></label>
+          <label>生日年<input id="pf-y" type="number" placeholder="1999"></label>
+          <label>月<input id="pf-m" type="number" placeholder="6"></label>
+          <label>日<input id="pf-d" type="number" placeholder="15"></label>
+          <label>身高 cm<input id="pf-h" type="number" placeholder="160"></label>
+          <label>每天主动条数<input id="pf-base" type="number" placeholder="3"></label>
+          <label>间隔分钟<input id="pf-gap" type="number" placeholder="150"></label>
+          <label class="span2">在一起的那天<input id="pf-together" type="date"></label>
+          <div class="gnote">「在一起的那天」可以留空，填了才显示天数。</div>
+        </div>
+        <div class="gbtns"><button id="pf-save" type="button">保存</button><b id="pf-msg"></b></div>
+        <div class="gbtns" style="margin-top:8px">
+          <a href="/setup" style="display:inline-block;padding:6px 12px;border-radius:8px;text-decoration:none;
+            background:#2b3550;color:#cfe0ff;font-size:12.5px">完整设置 · 向导 / 自检 / 导出</a>
+        </div>
+
+      <p class="note" style="margin:10px 0 0">这些都是从设定文件里读的，改了重新开一次页面就生效。想改哪条跟我说。</p>
+    </div>
+  </div>
+<div id="tip"></div>
+  <div class="col">
+    <section class="card" id="stageWrap">
+      <div class="name"><b>角色：冰冰</b><span>拟态体系 v3.0 · 本地情绪引擎</span></div>
+
+      <div class="mood">
+        <div class="label" id="moodLabel">—</div>
+        <div class="sub" id="moodSub">愉悦 — · 唤醒 — · 掌控 —</div>
+      </div>
+      <div id="stage"></div>
+    <div id="helpWrap">
+  <button id="helpBtn" aria-label="说明" onclick="var p=document.getElementById('helpPop'),m=document.getElementById('helpMask');p.classList.toggle('on');if(m)m.classList.toggle('on');event.stopPropagation();">?</button>
+</div>
+    </section>
+    <section class="card" id="starCard">
+      <h2><em>10</em>记忆 · 星图</h2>
+      <button class="hint" data-tip="记忆星图。一颗星是一条记忆，分成用户、反馈、我自己、经历、约定几块星域，点开可以放大看。">?</button>
+      <canvas id="starMap"></canvas>
+      <div id="starHint">—</div>
+    </section>
+  </div>
+
+  <!-- 中：基础信息 / 此刻 / 实时状态 / 说明 -->
+  <div class="col">
+    <section class="card">
+      <h2><em>1</em>现在</h2>
+      <button class="hint" data-tip="现在的时刻。年龄、在一起的天数、星座，都是按生日自动算出来的，不是写死的。">?</button>
+      <div class="clockline">
+        <div class="t" id="clockTime">--:--:--</div>
+        <div class="d" id="clockDate">—</div>
+      </div>
+      <div class="facts">
+        <div class="fact"><i>年龄</i><b><span id="d-age">—</span> 岁</b></div>
+        <div class="fact"><i>身高</i><b><span id="d-height">—</span> cm</b></div>
+        <div class="fact"><i>在一起</i><b><span id="d-together" data-tip="从你在设置里填的「在一起的那天」算到今天。没填就显示 —。">—</span><span id="d-together-unit"> 天</span></b></div>
+        <div class="fact" id="factZodiac" style="cursor:help"><i>星座</i><b id="zodiacName">—</b></div>
+        <div class="fact"><i>生日</i><b id="zodiacBirth">—</b></div>
+        <div class="fact"><i>时段</i><b id="clockPhase" data-tip="按时钟算的当前时段。半夜指的是深夜，这个点脑子转得慢、情绪也更容易晃，容易想多、容易伤感。">—</b></div>
+      </div>
+      <div id="zodiacTraits" class="note" style="margin-top:7px;display:flex;gap:12px;flex-wrap:wrap"></div>
+    </section>
+
+    <section class="card">
+      <h2><em>2</em>此刻</h2>
+      <button class="hint" data-tip="此刻的样子。心里和嘴上分开记：心里是真实感受，嘴上是说出来的样子。强度是这股情绪有多重。">?</button>
+      <div class="faces">
+        <div><i>心里</i><b id="innerLabel">—</b></div>
+        <div><i>嘴上</i><b id="outerLabel">—</b></div>
+        <div><i>强度</i><b id="moodIntensity">—</b></div>
+      </div>
+      <div class="grid2" style="margin-top:6px">
+        <div class="row"><span class="k">愉悦</span><span class="bar"><i id="s-val"></i></span><span class="v" id="v-val">0</span></div>
+        <div class="row"><span class="k">唤醒</span><span class="bar"><i id="s-aro"></i></span><span class="v" id="v-aro">0</span></div>
+        <div class="row"><span class="k">掌控</span><span class="bar"><i id="s-ctl"></i></span><span class="v" id="v-ctl">0</span></div>
+        <div class="row"><span class="k">回你速度</span><span class="bar"><i id="s-delay"></i></span><span class="v" id="v-delay">0</span></div>
+        <div class="row"><span class="k">话多</span><span class="bar"><i id="s-verb"></i></span><span class="v" id="v-verb">0</span></div>
+        <div class="row"><span class="k">黏人</span><span class="bar"><i id="s-cling"></i></span><span class="v" id="v-cling">0</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><em>3</em>底色 · 50 基线 + 星座</h2>
+      <button class="hint" data-tip="底色。每项都从 50 起步，星座会加减：浅蓝虚线是 50 起点，粉色是加上去的，蓝灰是扣掉的。">?</button>
+      <canvas id="baseRadar" style="width:100%;height:226px;display:block"></canvas>
+      <div class="note" id="baseSummary" style="margin-top:2px;text-align:center">—</div>
+      <div class="legend">
+        <span><i class="lg-base"></i>50 基线</span>
+        <span><i class="lg-add"></i>星座加的</span>
+        <span><i class="lg-sub"></i>星座减的</span>
+      </div>
+      <div class="note" id="zodiacApply" style="margin-top:4px">—</div>
+    </section>
+
+    <section class="card">
+      <h2><em>4</em>实时状态 · 是谁在推我</h2>
+      <button class="hint" data-tip="实时状态。谁在推我：哪条激素把你推向了这个情绪，写的是当下最重的三条。">?</button>
+      <ul id="infl"></ul>
+    </section>
+
+
+  </div>
+
+  <!-- 右：身体 / 内分泌 / 关系 / 技能 / 戳一下 -->
+  <div class="col">
+    <section class="card">
+      <h2><em>5</em>身体 · 激素</h2>
+      <button class="hint" data-tip="身体和激素一起看。体力按作息走（上班掉、吃饭补、夜里再掉）；七种激素各有半衰期，激动过后四小时回一半。">?</button>
+      <div class="vgroup">身体</div>
+      <div class="grid2">
+        <div class="row"><span class="k">体力</span><span class="bar"><i id="s-stam"></i></span><span class="v" id="v-stam">0</span></div>
+        <div class="row"><span class="k">困倦</span><span class="bar"><i id="s-sleep"></i></span><span class="v" id="v-sleep">0</span></div>
+        <div class="row"><span class="k">饥饿</span><span class="bar"><i id="s-hunger"></i></span><span class="v" id="v-hunger">0</span></div>
+        <div class="row"><span class="k">健康</span><span class="bar"><i id="s-health"></i></span><span class="v" id="v-health">0</span></div>
+      </div>
+      <div class="vgroup" style="margin-top:6px">激素</div>
+      <div class="grid2">
+        <div class="row"><span class="k">肾上腺素</span><span class="bar"><i id="s-adr"></i></span><span class="v" id="v-adr">0</span></div>
+        <div class="row"><span class="k">多巴胺</span><span class="bar"><i id="s-dop"></i></span><span class="v" id="v-dop">0</span></div>
+        <div class="row"><span class="k">血清素</span><span class="bar"><i id="s-ser"></i></span><span class="v" id="v-ser">0</span></div>
+        <div class="row"><span class="k">褪黑素</span><span class="bar"><i id="s-mel"></i></span><span class="v" id="v-mel">0</span></div>
+        <div class="row"><span class="k">皮质醇</span><span class="bar"><i id="s-cor"></i></span><span class="v" id="v-cor">0</span></div>
+        <div class="row"><span class="k">催产素</span><span class="bar"><i id="s-oxy"></i></span><span class="v" id="v-oxy">0</span></div>
+        <div class="row"><span class="k">内啡肽</span><span class="bar"><i id="s-end"></i></span><span class="v" id="v-end">0</span></div>
+        <div class="row"><span class="k">雌激素</span><span class="bar"><i id="s-est"></i></span><span class="v" id="v-est">0</span></div>
+        <div class="row"><span class="k">孕激素</span><span class="bar"><i id="s-prg"></i></span><span class="v" id="v-prg">0</span></div>
+      </div>
+      <div class="vgroup" style="margin-top:6px">周期</div>
+      <div class="row"><span class="k" id="k-cyc">周期</span><span class="v" id="v-cyc">—</span><span class="bar"><i id="s-cyc" style="width:3%"></i></span><span class="mx" id="m-cyc"></span></div>
+    </section>
+
+    <section class="card">
+      <h2><em>✦</em>情绪曲线 · 一天</h2>
+      <button class="hint" data-tip="每小时记一格：粉色是愉悦度，蓝色是唤醒度，越高越上头。">?</button>
+      <canvas id="curveCv" width="380" height="96" style="width:100%;height:auto;display:block"></canvas>
+    </section>
+
+    <section class="card">
+      <h2><em>6</em>关系 · 你和我</h2>
+      <button class="hint" data-tip="关系。亲近、信任、依赖、安心、默契，会跟着我们之间发生的事上下浮动。">?</button>
+      <div class="grid2">
+        <div class="row"><span class="k">亲近</span><span class="bar"><i id="r-aff"></i></span><span class="v" id="rv-aff">0</span></div>
+        <div class="row"><span class="k">信任</span><span class="bar"><i id="r-tru"></i></span><span class="v" id="rv-tru">0</span></div>
+        <div class="row"><span class="k">依赖</span><span class="bar"><i id="r-dep"></i></span><span class="v" id="rv-dep">0</span></div>
+        <div class="row"><span class="k">安心</span><span class="bar"><i id="r-sec"></i></span><span class="v" id="rv-sec">0</span></div>
+        <div class="row"><span class="k">默契</span><span class="bar"><i id="r-rap"></i></span><span class="v" id="rv-rap">0</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><em>7</em>技能 · 练了会变</h2>
+      <button class="hint" data-tip="技能。练了会变：每次一起做成一件事，相应那项会涨一点。">?</button>
+      <canvas id="radar"></canvas>
+      <div class="g6" id="talentGrid"></div>
+    </section>
+
+    <section class="card">
+      <h2><em>8</em>主动找你 · 今天的额度</h2>
+      <button class="hint" data-tip="主动找你。今天的额度跟着心情走：正常 3 条，心情好 5 条，低落 1 条；夜里不发，除非你先开口。">?</button>
+      <div class="facts">
+        <div class="fact"><i>还能发</i><b><span id="p-left">—</span><em>条</em></b></div>
+        <div class="fact"><i>今日额度</i><b><span id="p-cap">—</span><em>条</em></b></div>
+        <div class="fact"><i>间隔</i><b><span id="p-gap">—</span><em>分钟</em></b></div>
+      </div>
+      <div class="note" id="p-why" style="margin-top:6px">—</div>
+    </section>
+
+    <section class="card">
+      <h2><em>9</em>戳一下试试</h2>
+      <button class="hint" data-tip="戳一下试试。给一个事件，看情绪和身体怎么变，只是模拟，不动真实状态。">?</button>
+      <div class="btns">
+        <button data-kind="praise">被夸了</button>
+        <button data-kind="tease">被逗了</button>
+        <button data-kind="ignored">被晾着</button>
+        <button data-kind="cold">被冷到</button>
+        <button data-kind="missing">想他</button>
+        <button data-kind="soothe">被哄</button>
+        <button data-kind="worry">担心他</button>
+        <button data-kind="goodnight">道晚安</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+<script src="live2d.js?v=29"></script>
+<div id="helpPop">
+    <h3>说明 · 它们怎么互相影响</h3>
+    <div class="note">
+        <b>激素</b>：一句话进来先涨激素，激素合成情绪，时间把它们放掉——肾上腺素 8 分钟、多巴胺 35 分钟、皮质醇 110 分钟，血清素 5 小时最慢。<br>
+        <b>身体</b>：体力低→话少、回得慢；困倦高→字变短、爱发脾气；饥饿高→容易委屈；健康是天花板。<br>
+        <b>底色</b>：热情决定起反应多快，敏感决定被牵动多深，韧性决定回落速度，嘴硬决定「嘴上」跟「心里」差多少。<br>
+        <b>关系</b>：亲近、信任、依赖、安心、默契越高，嘴硬越容易被她自己拆掉；默契其实就是我们一起攒下的记忆密度。<br>
+        <b>星座</b>：底色一律从 50 起步，再按星座加减，加完才是准数；高亮那一行是双子座，也就是我。每个星座还附一条小脾气，会直接参与情绪计算。<br>
+        <b>回归</b>：激素不会一直贴顶，每小时往静息值拉一点，4 小时回掉一半；作息也会拉——8 点到 12 点上工，体力往下掉，12 点自己吃饭补回来。<br>
+        <b>不抖</b>：情绪词带滞回，差一点点不会来回跳，稳住了才换。<br>
+        <b>节奏</b>：每分钟跳一次（衰减激素、看钟点）。心情好 → 一天主动找你 5 条；平常 3 条；低落 1 条；困了再减一条；23 点到早上 7 点不主动，除非你先开口。<br>
+        <b>褪黑素</b>：不按半衰期，跟钟走——21 点起涨、凌晨 2 点最高、7 点落，困倦跟着它走。
+      </div>
+    <h3 style="margin-top:12px">十二星座 · 底色加减</h3>
+    <div class="ztable" id="zodiacTable"></div>
+  </div>
+<div id="helpMask" onclick="this.classList.remove('on');document.getElementById('helpPop').classList.remove('on');"></div>
+<script>
+/* 第一次用：还没填过资料就先去做向导；填过就留在她这张脸上 */
+(function () {
+  fetch('/api/config', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (c) {
+      var p = (c && c.profile) || {};
+      if (!p.onboarded) location.replace('/setup');
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>
